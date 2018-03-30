@@ -79,7 +79,7 @@
   </avrgcc.linker.libraries.Libraries>
   <avrgcc.linker.libraries.LibrarySearchPaths>
     <ListValues>
-      <Value>../../../../../../CEENBOT-items</Value>
+      <Value>../../../../../CEENBOT-items</Value>
     </ListValues>
   </avrgcc.linker.libraries.LibrarySearchPaths>
   <avrgcc.assembler.general.IncludePaths>

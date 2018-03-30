@@ -48,7 +48,7 @@
 
 // ---------------------- Defines:
 
-#define DEG_90  150     /* Number of steps for a 90-degree (in place) turn. */
+#define DEG_90  123    /* Number of steps for a 90-degree (in place) turn. */
 
 
 // Desc: This macro-function can be used to reset a motor-action structure
@@ -513,10 +513,11 @@ do {                                  \
 			pSensors->err = (pSensors->distance_cm - 27.75 );
 			pSensors->derivative = pSensors->err - pSensors->last_err;
 
-			pAction->speed_L = ( 150 + ( (5.4*pSensors->err) + (700*pSensors->derivative )));
-			pAction->speed_R = ( 150 - ( (5.4*pSensors->err) + (700*pSensors->derivative )));
+			pAction->speed_L = ( 150 + (4*pSensors->err) + (69*pSensors->derivative ));
+			pAction->speed_R = ( 150 - (4*pSensors->err) - (69*pSensors->derivative ));
 			
-			
+			LCD_printf_RC( 3, 0, "Error: %d", pAction->speed_L );
+			LCD_printf_RC( 2, 0, "Error: %d", pAction->speed_R );
 			LCD_printf_RC( 1, 0, "Error: %ld", pSensors->err );
 			
 			// Store this sensor reading as the last value for the
@@ -730,9 +731,9 @@ do {                                  \
 				// (IR sense happens every 125ms).
 				IR_sense( &sensor_data, 125 );
 				
-				SONAR_SENSE( &sensor_data, 50 );
+				SONAR_SENSE( &sensor_data, 200 );
 				
-				photo_sense( &sensor_data, 75 );
+				//photo_sense( &sensor_data, 75 );
 				
 				// Behaviors.
 				//explore( &action );
