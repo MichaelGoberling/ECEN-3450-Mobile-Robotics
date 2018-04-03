@@ -417,8 +417,8 @@ do {                                  \
 			float thisLight_R = pSensors->light_R;
 			float thisLight_L = pSensors->light_L;
 			
-			LCD_printf_RC(2, 0, "left: %.02f\n", thisLight_L );
-			LCD_printf_RC(1, 0, "right: %.02f\n", thisLight_R );
+			//LCD_printf_RC(2, 0, "left: %.02f\n", thisLight_L );
+			//LCD_printf_RC(1, 0, "right: %.02f\n", thisLight_R );
 			
 			if((pSensors->light_L + pSensors->light_R)/2 > 1)
 			{
@@ -604,6 +604,9 @@ do {                                  \
 					sample = ADC_sample();
 					pSensors->line_left = ((sample * 5.0f) / 1024);
 					
+					LCD_printf_RC(2, 0, "left: %.02f\n", line_left );
+					LCD_printf_RC(1, 0, "right: %.02f\n", line_right );
+					
 					TIMER_SNOOZE( sense_timer_4 );
 					
 				} // end if()
@@ -619,12 +622,14 @@ do {                                  \
 			//Assuming target value is 4.5q
 			pSensors->err_right = ( 4.5 - this_line_right );
 			pSensors->err_left = ( 4.5 - this_line_left );
-			pSensors->derivative_right = pSensors->err_right - pSensors->last_err_right;
-			pSensors->derivative_left = pSensors->err_left - pSensors->last_err_left;
+			//pSensors->derivative_right = pSensors->err_right - pSensors->last_err_right;
+			//pSensors->derivative_left = pSensors->err_left - pSensors->last_err_left;
 
-			pAction->speed_L = ( 150 + (4*pSensors->err_right) + (69*pSensors->derivative_right ));
-			pAction->speed_R = ( 150 - (4*pSensors->err_left) - (69*pSensors->derivative_left ));
+			//pAction->speed_L = ( 150 + (4*pSensors->err_right) + (69*pSensors->derivative_right ));
+			//pAction->speed_R = ( 150 - (4*pSensors->err_left) - (69*pSensors->derivative_left ));
 
+			pAction->speed_L = ( 150 + (4*pSensors->err_right));
+			pAction->speed_R = ( 150 - (4*pSensors->err_left));
 			// Store this sensor reading as the last value for the
 			// next time the program comes back to the function
 			pSensors->last_err_right = pSensors->err_right;
@@ -870,5 +875,8 @@ do {                                  \
 			} // end while()
 			
 		} // end CBOT_main()
+
+
+
 
 
