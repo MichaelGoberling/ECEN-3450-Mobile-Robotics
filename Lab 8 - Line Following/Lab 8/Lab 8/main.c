@@ -606,6 +606,9 @@ do {                                  \
 					sample = ADC_sample();
 					pSensors->line_left = ((sample * 5.0f) / 1024);
 					
+					LCD_printf_RC(2, 0, "left: %.02f\n", line_left );
+					LCD_printf_RC(1, 0, "right: %.02f\n", line_right );
+					
 					TIMER_SNOOZE( sense_timer_4 );
 					
 				} // end if()
@@ -624,6 +627,7 @@ do {                                  \
 			float this_line_right = pSensors->line_right;
 			float this_line_left = pSensors->line_left; 
 			
+<<<<<<< HEAD
 			//Assuming target value is 4.5
 			
 			pSensors->err_right = ( this_line_right - 0.1 ); 
@@ -635,6 +639,19 @@ do {                                  \
 			pAction->speed_R = ( 25 + (50*pSensors->err_right) + (20*pSensors->derivative_right));
 			pAction->speed_L = ( 25 + (50*pSensors->err_left) + (20*pSensors->derivative_left));
 				
+=======
+			//Assuming target value is 4.5q
+			pSensors->err_right = ( 4.5 - this_line_right );
+			pSensors->err_left = ( 4.5 - this_line_left );
+			//pSensors->derivative_right = pSensors->err_right - pSensors->last_err_right;
+			//pSensors->derivative_left = pSensors->err_left - pSensors->last_err_left;
+
+			//pAction->speed_L = ( 150 + (4*pSensors->err_right) + (69*pSensors->derivative_right ));
+			//pAction->speed_R = ( 150 - (4*pSensors->err_left) - (69*pSensors->derivative_left ));
+
+			pAction->speed_L = ( 150 + (4*pSensors->err_right));
+			pAction->speed_R = ( 150 - (4*pSensors->err_left));
+>>>>>>> 97c7015774b9c82ab00a605e6c1c5b4de8b1e05d
 			// Store this sensor reading as the last value for the
 			// next time the program comes back to the function
 			pSensors->last_err_right = pSensors->err_right;
@@ -874,3 +891,11 @@ do {                                  \
 			} // end while()
 			
 		} // end CBOT_main()
+<<<<<<< HEAD
+=======
+
+
+
+
+
+>>>>>>> 97c7015774b9c82ab00a605e6c1c5b4de8b1e05d
