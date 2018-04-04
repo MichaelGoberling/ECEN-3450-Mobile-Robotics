@@ -215,6 +215,8 @@ do {                                  \
 					
 					LCD_printf("Line Following!\n");
 					
+					break;
+					
 					case FOLLOWING:
 					LCD_printf("Following!\n");
 
@@ -417,8 +419,8 @@ do {                                  \
 			float thisLight_R = pSensors->light_R;
 			float thisLight_L = pSensors->light_L;
 			
-			LCD_printf_RC(2, 0, "left: %.02f\n", thisLight_L );
-			LCD_printf_RC(1, 0, "right: %.02f\n", thisLight_R );
+			//LCD_printf_RC(2, 0, "left: %.02f\n", thisLight_L );
+			//LCD_printf_RC(1, 0, "right: %.02f\n", thisLight_R );
 			
 			if((pSensors->light_L + pSensors->light_R)/2 > 1)
 			{
@@ -593,14 +595,14 @@ do {                                  \
 					
 					
 					// J3 pin 4
-					ADC_set_channel( ADC_CHAN6 );
+					ADC_set_channel( ADC_CHAN4 );
 					sample = ADC_sample();
 					pSensors->line_right = ((sample * 5.0f) / 1024);
 					
 					TMRSRVC_delay(50);
 					
 					// J3 pin 5
-					ADC_set_channel( ADC_CHAN7 );
+					ADC_set_channel( ADC_CHAN5 );
 					sample = ADC_sample();
 					pSensors->line_left = ((sample * 5.0f) / 1024);
 					
@@ -613,24 +615,32 @@ do {                                  \
 		
 		void Line_Follow( volatile MOTOR_ACTION *pAction, volatile SENSOR_DATA *pSensors )
 		{
+			//stuff
+			pAction->state = LINE_FOLLOW;
+			
+			LCD_printf_RC(2, 0, "left: %.02f\n", pSensors->line_left );
+			LCD_printf_RC(1, 0, "right: %.02f\n", pSensors->line_right );
+			
 			float this_line_right = pSensors->line_right;
 			float this_line_left = pSensors->line_left; 
 			
-			//Assuming target value is 4.5q
-			pSensors->err_right = ( 4.5 - this_line_right );
-			pSensors->err_left = ( 4.5 - this_line_left );
+			//Assuming target value is 4.5
+			
+			pSensors->err_right = ( this_line_right - 0.1 ); 
+			pSensors->err_left = ( this_line_left - 0.1 );
+			
 			pSensors->derivative_right = pSensors->err_right - pSensors->last_err_right;
 			pSensors->derivative_left = pSensors->err_left - pSensors->last_err_left;
 
-			pAction->speed_L = ( 150 + (4*pSensors->err_right) + (69*pSensors->derivative_right ));
-			pAction->speed_R = ( 150 - (4*pSensors->err_left) - (69*pSensors->derivative_left ));
-
+			pAction->speed_R = ( 25 + (50*pSensors->err_right) + (20*pSensors->derivative_right));
+			pAction->speed_L = ( 25 + (50*pSensors->err_left) + (20*pSensors->derivative_left));
+				
 			// Store this sensor reading as the last value for the
 			// next time the program comes back to the function
 			pSensors->last_err_right = pSensors->err_right;
 			pSensors->last_err_left = pSensors->err_left;	
 		}
-		
+	
 		void SONAR_AVOID( volatile MOTOR_ACTION *pAction, volatile SENSOR_DATA *pSensors )
 		{
 			if(pSensors->distance_cm < 75)
@@ -692,7 +702,6 @@ do {                                  \
 			if( (pSensors->right_IR == TRUE) && (pSensors->left_IR == TRUE) )
 			{
 				pAction->state = AVOIDING;
-
 				// STOP!
 				STEPPER_stop( STEPPER_BOTH, STEPPER_BRK_OFF );
 				
@@ -712,7 +721,6 @@ do {                                  \
 			}
 			else if( pSensors->left_IR == TRUE )
 			{
-
 				// Note that we're avoiding...
 				pAction->state = AVOIDING;
 				pSensors->IR_flag = TRUE;
@@ -729,7 +737,6 @@ do {                                  \
 				STEPPER_move_stwt( STEPPER_BOTH,
 				STEPPER_FWD, DEG_90, 200, 400, STEPPER_BRK_OFF,
 				STEPPER_REV, DEG_90, 200, 400, STEPPER_BRK_OFF );
-
 				// ... and set the motor action structure with variables to move forward.
 				
 				pAction->speed_L = 200;
@@ -743,7 +750,6 @@ do {                                  \
 				// Note that we're avoiding...
 				pAction->state = AVOIDING;
 				pSensors->IR_flag = FALSE;
-
 				// STOP!
 				STEPPER_stop( STEPPER_BOTH, STEPPER_BRK_OFF );
 				
@@ -756,9 +762,7 @@ do {                                  \
 				STEPPER_move_stwt( STEPPER_BOTH,
 				STEPPER_REV, DEG_90, 200, 400, STEPPER_BRK_OFF,
 				STEPPER_FWD, DEG_90, 200, 400, STEPPER_BRK_OFF );
-
 				// ... and set the motor action structure with variables to move forward.
-
 				pAction->state = AVOIDING;
 				pAction->speed_L = 200;
 				pAction->speed_R = 200;
@@ -841,7 +845,7 @@ do {                                  \
 				
 				//photo_sense( &sensor_data, 75 );
 				
-				Line_Sense( &sensor_data, 100 );
+				Line_Sense( &sensor_data, 50 );
 				// Behaviors.
 				//explore( &action );
 				
@@ -870,5 +874,3 @@ do {                                  \
 			} // end while()
 			
 		} // end CBOT_main()
-
-
